@@ -13,6 +13,11 @@ YELLOW='\e[33m'
 CYAN='\e[36m'
 NC='\e[0m' # No Color
 
+# Directorios predeterminados
+LOGS_DIR="./logs"
+DICTIONARY_DIR="./diccionarios"
+DEFAULT_DICTIONARY="$DICTIONARY_DIR/rockyou.txt"
+
 # Banner
 echo -e "${CYAN}"
 echo "  ____       _                     _       _   _                 _   "
@@ -22,6 +27,10 @@ echo " |  __/ (_| | |  __/ | | (_) | |  | | (_| | |_| | | | (_| | | | | |_ "
 echo " |_|   \__,_|_|\___|_|  \___/|_|  |_|\__,_|\__|_| |_|\__,_|_| |_|\__|"
 echo "                                                                   "
 echo -e "${NC}"
+
+# Crear directorios si no existen
+mkdir -p $LOGS_DIR
+mkdir -p $DICTIONARY_DIR
 
 # Actualizar y instalar aircrack-ng si no está instalado
 echo -e "${YELLOW}Actualizando los repositorios y verificando la instalación de aircrack-ng...${NC}"
@@ -46,7 +55,7 @@ echo
 echo -e "${CYAN}Escaneando las redes Wi-Fi disponibles...${NC}"
 echo -e "${YELLOW}Presiona Ctrl+C una vez que hayas encontrado el AP objetivo.${NC}"
 sleep 3
-LOG_FILE="handshake_scan_$(date +'%Y%m%d_%H%M%S').cap"
+LOG_FILE="$LOGS_DIR/handshake_scan_$(date +'%Y%m%d_%H%M%S').cap"
 airodump-ng $MON_INTERFACE
 
 # Paso 4: Seleccionar el AP objetivo
@@ -80,7 +89,19 @@ echo -e "${YELLOW}¿Deseas intentar desencriptar el handshake utilizando un dicc
 read -p "Introduce S para Sí o N para No: " DECRYPT_CHOICE
 
 if [[ "$DECRYPT_CHOICE" =~ ^[Ss]$ ]]; then
-  read -p "Introduce la ruta del diccionario: " DICTIONARY
+  read -p "Introduce la ruta del diccionario (deja en blanco para usar rockyou.txt): " DICTIONARY
+
+  # Usar el diccionario predeterminado si el usuario deja el campo en blanco
+  if [ -z "$DICTIONARY" ]; then
+    DICTIONARY=$DEFAULT_DICTIONARY
+    echo -e "${CYAN}Usando el diccionario predeterminado: $DICTIONARY${NC}"
+  fi
+
+  if [ ! -f "$DICTIONARY" ]; then
+    echo -e "${RED}El diccionario especificado no existe. Asegúrate de que la ruta es correcta.${NC}"
+    exit 1
+  fi
+
   echo -e "${CYAN}Intentando desencriptar el handshake con el diccionario $DICTIONARY...${NC}"
   aircrack-ng -w $DICTIONARY -b $BSSID $LOG_FILE-01.cap
 fi
