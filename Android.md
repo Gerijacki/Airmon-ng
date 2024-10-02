@@ -36,6 +36,7 @@ Here, we will focus on **Termux** as it's widely used and flexible.
   ```bash
   pkg install aircrack-ng
   ```
+  Or follow this [guide](https://github.com/pitube08642/aircrack-ng-for-termux)
 
 - **Alternatively, clone and build Aircrack-ng from source**:
   
